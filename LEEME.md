@@ -40,14 +40,12 @@ CNAME                          Dominio para GitHub Pages
 
 ## 2. Activar el formulario de contacto (gratis, sin cuenta)
 
-El formulario usa FormSubmit (https://formsubmit.co). Cada mensaje llega a **cquiroz@cysolutionsgroup.com** con copia a **yternera@cysolutionsgroup.com**.
+El formulario usa Formspree (https://formspree.io), formulario `mvkkywen`, con captcha activado. El visitante resuelve el captcha en la página de Formspree y luego ve una confirmación. El correo del visitante queda como "responder a", así que puede contestarle directamente.
 
-1. Con el sitio ya publicado, envíe un mensaje de prueba desde el formulario.
-2. FormSubmit enviará un correo de activación a cquiroz@cysolutionsgroup.com. Ábralo y haga clic en **Activate Form**. Revise también la carpeta de spam.
-3. Desde ese momento todos los mensajes llegan a los dos correos. El visitante queda como "responder a", así que puede contestarle directamente.
-4. (Opcional) En el correo de activación FormSubmit entrega un código aleatorio. Si reemplaza `cquiroz@cysolutionsgroup.com` por ese código en el `action` del formulario de `index.html`, su correo deja de aparecer en el código de la página.
-
-Para cambiar los destinatarios: el principal está en el `action` del formulario y la copia en el campo oculto `_cc` (varios correos separados por coma).
+- El correo que recibe los mensajes se configura en el panel de Formspree, no en el código, por lo que no aparece en la página.
+- El `action` del formulario en `index.html` es `https://formspree.io/f/mvkkywen`.
+- El campo oculto `_gotcha` es una trampa para robots; no lo quite.
+- Si desactiva el captcha en Formspree, el formulario sigue funcionando igual.
 
 ## 3. Publicar un artículo en el blog
 

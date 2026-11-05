@@ -80,44 +80,27 @@
   }
 
   /* ---- Formulario de contacto ----
-     Se envía con FormSubmit (gratis) a cquiroz@ y con copia (_cc) a yternera@.
-     Si el servicio no responde, se abre el correo del visitante con el mensaje listo
-     y dirigido a ambas direcciones. */
+     Se envía con Formspree (formspree.io/f/mvkkywen) como envío normal del navegador,
+     porque el formulario tiene captcha activado: el visitante resuelve el captcha en
+     Formspree y luego ve la página de confirmación. El destinatario se configura en
+     el panel de Formspree, no en este código. El campo "email" queda como "responder a". */
   var form = document.getElementById("contact-form");
   if (form) {
     var status = document.getElementById("form-status");
-    var mailto = function (data) {
-      var body = "Nombre: " + data.nombre + "\nEmpresa: " + (data.empresa || "-") +
-        "\nCorreo: " + data.email + "\nTeléfono: " + (data.telefono || "-") +
-        "\nServicio de interés: " + data.servicio + "\n\n" + data.mensaje;
-      window.location.href = "mailto:cquiroz@cysolutionsgroup.com,yternera@cysolutionsgroup.com?subject=" +
-        encodeURIComponent("Solicitud desde el sitio web: " + data.servicio) + "&body=" + encodeURIComponent(body);
-    };
     form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (form.querySelector('[name="_honey"]').value) return;
-      if (!form.reportValidity()) return;
-      var data = {};
-      new FormData(form).forEach(function (v, k) { data[k] = v; });
-      data._subject = "Nueva solicitud desde cysolutionsgroup.com: " + data.servicio;
-      data._replyto = data.email;
+      if (!form.reportValidity()) { e.preventDefault(); return; }
+      var servicio = form.querySelector('[name="servicio"]');
+      form.querySelector('[name="_subject"]').value =
+        "Nueva solicitud desde cysolutionsgroup.com: " + (servicio ? servicio.value : "");
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = true;
       status.className = "form-status"; status.textContent = "Enviando…";
-      fetch(form.getAttribute("action"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data)
-      })
-        .then(function (r) { return r.json().then(function (j) { if (!r.ok || String(j.success) !== "true") throw new Error(); }); })
-        .then(function () {
-          form.reset();
-          status.className = "form-status ok";
-          status.textContent = "Mensaje enviado. Le responderemos muy pronto.";
-        })
-        .catch(function () {
-          mailto(data);
-          status.className = "form-status err";
-          status.textContent = "No pudimos enviar el formulario. Abrimos su correo con el mensaje listo; si no se abre, escríbanos a cquiroz@cysolutionsgroup.com o al WhatsApp 317 332 9337.";
-        });
+    });
+    /* Si el visitante vuelve con el botón "Atrás", reactivar el botón. */
+    window.addEventListener("pageshow", function () {
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = false;
+      status.className = "form-status"; status.textContent = "";
     });
   }
 
