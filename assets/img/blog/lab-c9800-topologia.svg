@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" role="img" aria-labelledby="t d" font-family="Jost, Futura, Segoe UI, Arial, sans-serif">
+  <title id="t">Topología del laboratorio C9800 + AP en FlexConnect</title>
+  <desc id="d">La controladora virtual C9800-CL (192.168.1.7) está en la LAN 192.168.1.0/24 y llega al switch CYLab_sw1 por el puerto Gi1/0/24. El switch enruta entre la LAN y las VLAN 10, 20 y 30, y entrega DHCP con opción 43. El AP-LAB-01 está en Gi1/0/15, un troncal con VLAN nativa 10 para su gestión y las VLAN 20 y 30 para los SSID. Entre el AP y la controladora solo viaja el control CAPWAP; el tráfico de los clientes sale del AP directo a su VLAN.</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#B3161F"/>
+    </marker>
+  </defs>
+  <rect width="900" height="470" rx="14" fill="#F4F5F7"/>
+
+  <path d="M785 190 C 785 62, 110 62, 110 190" fill="none" stroke="#B3161F" stroke-width="3" stroke-dasharray="9 7" marker-start="url(#arr)" marker-end="url(#arr)"/>
+  <rect x="262" y="80" width="386" height="30" rx="15" fill="#FDECEC" stroke="#B3161F"/>
+  <text x="455" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#8F1219">CAPWAP solo control · UDP 5246 (FlexConnect)</text>
+
+  <line x1="200" y1="245" x2="232" y2="245" stroke="#1D2026" stroke-width="4"/>
+  <line x1="328" y1="245" x2="380" y2="245" stroke="#1D2026" stroke-width="4"/>
+  <text x="376" y="270" text-anchor="end" font-size="11" fill="#646a74">Gi1/0/24</text>
+  <line x1="600" y1="245" x2="690" y2="245" stroke="#1D2026" stroke-width="4"/>
+  <text x="645" y="233" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1D2026">Troncal</text>
+  <text x="645" y="265" text-anchor="middle" font-size="11.5" fill="#475569">nativa 10</text>
+  <text x="645" y="280" text-anchor="middle" font-size="11.5" fill="#475569">+ 20, 30</text>
+  <text x="604" y="300" font-size="11" fill="#646a74">Gi1/0/15</text>
+
+  <rect x="20" y="190" width="180" height="112" rx="10" fill="#ffffff" stroke="#E1252F" stroke-width="2"/>
+  <path d="M30 190 h160 a10 10 0 0 1 10 10 v20 h-180 v-20 a10 10 0 0 1 10 -10 z" fill="#E1252F"/>
+  <text x="110" y="210" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">CONTROLADORA (VM)</text>
+  <text x="110" y="242" text-anchor="middle" font-size="15" font-weight="700" fill="#1D2026">WLC · C9800-CL</text>
+  <text x="110" y="263" text-anchor="middle" font-size="12.5" fill="#2E323A">192.168.1.7 · gestión</text>
+  <text x="110" y="282" text-anchor="middle" font-size="11.5" fill="#646a74">IOS-XE 17.15.6</text>
+
+  <rect x="232" y="217" width="96" height="56" rx="8" fill="#ffffff" stroke="#9AA0AA" stroke-width="1.5"/>
+  <text x="280" y="240" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1D2026">Router LAN</text>
+  <text x="280" y="258" text-anchor="middle" font-size="11.5" fill="#646a74">192.168.1.1</text>
+  <text x="290" y="300" text-anchor="middle" font-size="11.5" fill="#646a74">LAN 192.168.1.0/24</text>
+
+  <rect x="380" y="180" width="220" height="136" rx="10" fill="#ffffff" stroke="#1D2026" stroke-width="2"/>
+  <path d="M390 180 h200 a10 10 0 0 1 10 10 v20 h-220 v-20 a10 10 0 0 1 10 -10 z" fill="#1D2026"/>
+  <text x="490" y="200" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">SWITCH CAPA 3</text>
+  <text x="490" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#1D2026">CYLab_sw1</text>
+  <text x="490" y="251" text-anchor="middle" font-size="11.5" fill="#2E323A">192.168.1.110 · LAN</text>
+  <text x="490" y="268" text-anchor="middle" font-size="11.5" fill="#2E323A">Vlan10 · gestión de APs</text>
+  <text x="490" y="285" text-anchor="middle" font-size="11.5" fill="#2E323A">Vlan20 10.10.20.1 · invitados</text>
+  <text x="490" y="302" text-anchor="middle" font-size="11.5" fill="#2E323A">Vlan30 10.10.30.1 · corporativa</text>
+
+  <rect x="690" y="190" width="190" height="112" rx="10" fill="#ffffff" stroke="#3D4450" stroke-width="2"/>
+  <path d="M700 190 h170 a10 10 0 0 1 10 10 v20 h-190 v-20 a10 10 0 0 1 10 -10 z" fill="#3D4450"/>
+  <text x="785" y="210" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">ACCESS POINT</text>
+  <text x="785" y="242" text-anchor="middle" font-size="15" font-weight="700" fill="#1D2026">AP-LAB-01</text>
+  <text x="785" y="263" text-anchor="middle" font-size="12" fill="#2E323A">Modo FlexConnect</text>
+  <text x="785" y="282" text-anchor="middle" font-size="11.5" fill="#646a74">10.10.10.x por DHCP</text>
+
+  <rect x="385" y="340" width="210" height="76" rx="10" fill="#fff7e6" stroke="#b45309" stroke-dasharray="5 4"/>
+  <text x="490" y="362" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7c2d12">DHCP en CYLab_sw1</text>
+  <text x="490" y="381" text-anchor="middle" font-size="11.5" fill="#7c2d12">GESTION · opción 43 → 192.168.1.7</text>
+  <text x="490" y="399" text-anchor="middle" font-size="11.5" fill="#7c2d12">INVITADOS · CORPORATIVA</text>
+
+  <path d="M750 322 q35 -14 70 0" fill="none" stroke="#3D4450" stroke-width="2.5"/>
+  <path d="M760 333 q25 -10 50 0" fill="none" stroke="#3D4450" stroke-width="2.5"/>
+  <rect x="660" y="348" width="220" height="30" rx="15" fill="#ffffff" stroke="#E1252F"/>
+  <text x="770" y="368" text-anchor="middle" font-size="12.5" fill="#1D2026"><tspan font-weight="700">CY-Corp</tspan> · WPA2-PSK → VLAN 30</text>
+  <rect x="660" y="386" width="220" height="30" rx="15" fill="#ffffff" stroke="#9AA0AA"/>
+  <text x="770" y="406" text-anchor="middle" font-size="12.5" fill="#1D2026"><tspan font-weight="700">CY-Invitados</tspan> · portal → VLAN 20</text>
+  <text x="770" y="438" text-anchor="middle" font-size="11.5" fill="#646a74">El AP entrega el tráfico de clientes en su VLAN</text>
+
+  <line x1="24" y1="372" x2="64" y2="372" stroke="#1D2026" stroke-width="4"/>
+  <text x="74" y="376" font-size="12" fill="#2E323A">Enlace cableado</text>
+  <line x1="24" y1="398" x2="64" y2="398" stroke="#B3161F" stroke-width="3" stroke-dasharray="9 7"/>
+  <text x="74" y="402" font-size="12" fill="#2E323A">Túnel CAPWAP (lógico)</text>
+</svg>

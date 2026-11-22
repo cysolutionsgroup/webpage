@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" role="img" aria-labelledby="t d" font-family="Jost, Futura, Segoe UI, Arial, sans-serif">
+  <title id="t">Tags y perfiles del laboratorio en la C9800</title>
+  <desc id="d">El Policy Tag TAG-POLICY-LAB une WLAN-CORP con POLICY-CORP (VLAN 30) y WLAN-INVITADOS con POLICY-INVITADOS (VLAN 20). El Site Tag TAG-SITE-LAB tiene el sitio local desactivado, lo que pone el AP en FlexConnect, y usa el Flex profile FLEX-LAB con VLAN nativa 10 y las VLAN 20 y 30. El RF Tag es el de fábrica. Los tres tags se asignan al AP por su MAC Ethernet.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1D2026"/>
+    </marker>
+  </defs>
+  <rect width="900" height="450" rx="14" fill="#F4F5F7"/>
+
+  <rect x="20" y="20" width="300" height="250" rx="12" fill="#FDECEC" stroke="#E1252F" stroke-width="2"/>
+  <text x="170" y="48" text-anchor="middle" font-size="15" font-weight="700" fill="#B3161F">Policy Tag · TAG-POLICY-LAB</text>
+  <text x="170" y="68" text-anchor="middle" font-size="12" fill="#2E323A">¿Qué SSID y en qué VLAN?</text>
+  <rect x="36" y="84" width="268" height="80" rx="8" fill="#ffffff" stroke="#F3A5A9"/>
+  <text x="170" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="#1D2026">WLAN-CORP → POLICY-CORP</text>
+  <text x="170" y="126" text-anchor="middle" font-size="12" fill="#2E323A">SSID CY-Corp · WPA2-PSK</text>
+  <text x="170" y="146" text-anchor="middle" font-size="12" fill="#2E323A">VLAN 30 · switching local</text>
+  <rect x="36" y="174" width="268" height="80" rx="8" fill="#ffffff" stroke="#F3A5A9"/>
+  <text x="170" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="#1D2026">WLAN-INVITADOS → POLICY-INVITADOS</text>
+  <text x="170" y="216" text-anchor="middle" font-size="12" fill="#2E323A">SSID CY-Invitados · portal cautivo</text>
+  <text x="170" y="236" text-anchor="middle" font-size="12" fill="#2E323A">VLAN 20 · switching local</text>
+
+  <rect x="340" y="20" width="280" height="250" rx="12" fill="#EEF0F2" stroke="#3D4450" stroke-width="2"/>
+  <text x="480" y="48" text-anchor="middle" font-size="15" font-weight="700" fill="#1D2026">Site Tag · TAG-SITE-LAB</text>
+  <text x="480" y="68" text-anchor="middle" font-size="12" fill="#2E323A">¿Cómo trabaja el AP?</text>
+  <rect x="356" y="84" width="248" height="52" rx="8" fill="#ffffff" stroke="#C9CDD3"/>
+  <text x="480" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="#1D2026">Sitio local: desactivado</text>
+  <text x="480" y="125" text-anchor="middle" font-size="12" fill="#2E323A">→ el AP pasa a FlexConnect</text>
+  <rect x="356" y="146" width="248" height="62" rx="8" fill="#ffffff" stroke="#C9CDD3"/>
+  <text x="480" y="168" text-anchor="middle" font-size="13" font-weight="700" fill="#1D2026">Flex profile FLEX-LAB</text>
+  <text x="480" y="188" text-anchor="middle" font-size="12" fill="#2E323A">VLAN nativa 10 · VLAN 20 y 30</text>
+  <rect x="356" y="218" width="248" height="40" rx="8" fill="#ffffff" stroke="#C9CDD3" stroke-dasharray="4 4"/>
+  <text x="480" y="243" text-anchor="middle" font-size="12" fill="#646a74">AP Join profile: default-ap-profile</text>
+
+  <rect x="640" y="20" width="240" height="250" rx="12" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+  <text x="760" y="48" text-anchor="middle" font-size="15" font-weight="700" fill="#7c2d12">RF Tag · default-rf-tag</text>
+  <text x="760" y="68" text-anchor="middle" font-size="12" fill="#2E323A">¿Cómo trabajan las radios?</text>
+  <rect x="656" y="84" width="208" height="44" rx="8" fill="#ffffff" stroke="#fdba74"/>
+  <text x="760" y="111" text-anchor="middle" font-size="12.5" fill="#1D2026">Valores globales 2,4 GHz</text>
+  <rect x="656" y="138" width="208" height="44" rx="8" fill="#ffffff" stroke="#fdba74"/>
+  <text x="760" y="165" text-anchor="middle" font-size="12.5" fill="#1D2026">Valores globales 5 GHz</text>
+  <text x="760" y="214" text-anchor="middle" font-size="12" fill="#646a74">Sin cambios en este lab</text>
+
+  <path d="M170 270 L170 318 L400 346" fill="none" stroke="#1D2026" stroke-width="2.5" marker-end="url(#a)"/>
+  <path d="M480 270 L480 338" fill="none" stroke="#1D2026" stroke-width="2.5" marker-end="url(#a)"/>
+  <path d="M760 270 L760 318 L560 346" fill="none" stroke="#1D2026" stroke-width="2.5" marker-end="url(#a)"/>
+
+  <rect x="340" y="342" width="280" height="80" rx="12" fill="#ffffff" stroke="#1D2026" stroke-width="2"/>
+  <text x="480" y="372" text-anchor="middle" font-size="15" font-weight="700" fill="#1D2026">AP-LAB-01</text>
+  <text x="480" y="394" text-anchor="middle" font-size="12" fill="#2E323A">ap 78bc.1a6b.a124 (MAC Ethernet)</text>
+  <text x="480" y="411" text-anchor="middle" font-size="12" fill="#2E323A">policy-tag · site-tag · rf-tag</text>
+
+  <text x="24" y="440" font-size="11.5" fill="#646a74">Un AP sin tags propios usa default-policy-tag, default-site-tag y default-rf-tag, y trabaja en modo Local.</text>
+</svg>

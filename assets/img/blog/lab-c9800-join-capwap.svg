@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-labelledby="t d" font-family="Jost, Futura, Segoe UI, Arial, sans-serif">
+  <title id="t">Proceso de registro del AP en la C9800</title>
+  <desc id="d">El AP obtiene IP por DHCP (con o sin opción 43), envía un CAPWAP Discovery Request a la IP de la opción 43 o por broadcast en su subred, recibe la respuesta, negocia DTLS con certificados, envía Join Request, recibe Join Response, descarga la imagen solo si la versión difiere y pasa al estado Run tras recibir la configuración.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1D2026"/>
+    </marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#B3161F"/>
+    </marker>
+  </defs>
+  <rect width="900" height="560" rx="14" fill="#F4F5F7"/>
+
+  <rect x="16" y="92"  width="96" height="74" rx="8" fill="#fff7e6"/>
+  <rect x="16" y="176" width="96" height="74" rx="8" fill="#FDECEC"/>
+  <rect x="16" y="260" width="96" height="40" rx="8" fill="#ede9fe"/>
+  <rect x="16" y="310" width="96" height="74" rx="8" fill="#E9EBEE"/>
+  <rect x="16" y="394" width="96" height="40" rx="8" fill="#fee2e2"/>
+  <rect x="16" y="444" width="96" height="74" rx="8" fill="#EEF0F2"/>
+  <g font-size="12.5" font-weight="700" text-anchor="middle">
+    <text x="64" y="133" fill="#7c2d12">1 · DHCP</text>
+    <text x="64" y="211" fill="#8F1219">2 · Discovery</text>
+    <text x="64" y="285" fill="#5b21b6">3 · DTLS</text>
+    <text x="64" y="351" fill="#1D2026">4 · Join</text>
+    <text x="64" y="419" fill="#991b1b">5 · Imagen</text>
+    <text x="64" y="485" fill="#1D2026">6 · Run</text>
+  </g>
+
+  <rect x="150" y="24" width="160" height="44" rx="8" fill="#3D4450"/>
+  <text x="230" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">AP-LAB-01</text>
+  <rect x="410" y="24" width="180" height="44" rx="8" fill="#b45309"/>
+  <text x="500" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">DHCP (CYLab_sw1)</text>
+  <rect x="690" y="24" width="180" height="44" rx="8" fill="#E1252F"/>
+  <text x="780" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">WLC 192.168.1.7</text>
+
+  <g stroke="#9AA0AA" stroke-width="2" stroke-dasharray="4 5">
+    <line x1="230" y1="68" x2="230" y2="535"/>
+    <line x1="500" y1="68" x2="500" y2="535"/>
+    <line x1="780" y1="68" x2="780" y2="535"/>
+  </g>
+
+  <g font-size="13" fill="#1D2026">
+    <line x1="232" y1="116" x2="498" y2="116" stroke="#1D2026" stroke-width="2" marker-end="url(#a)"/>
+    <text x="365" y="108" text-anchor="middle">DHCP Discover / Request</text>
+    <line x1="498" y1="150" x2="232" y2="150" stroke="#1D2026" stroke-width="2" marker-end="url(#a)"/>
+    <text x="365" y="142" text-anchor="middle">IP 10.10.10.x + opción 43</text>
+
+    <line x1="232" y1="200" x2="778" y2="200" stroke="#B3161F" stroke-width="2" marker-end="url(#b)"/>
+    <text x="505" y="192" text-anchor="middle">Discovery Request: unicast (opción 43) o broadcast (misma subred)</text>
+    <line x1="778" y1="234" x2="232" y2="234" stroke="#B3161F" stroke-width="2" marker-end="url(#b)"/>
+    <text x="505" y="226" text-anchor="middle">Discovery Response (nombre, carga, versión)</text>
+
+    <line x1="232" y1="284" x2="778" y2="284" stroke="#6d28d9" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
+    <text x="505" y="276" text-anchor="middle">Handshake DTLS: certificado del AP ⇄ certificado SSC de la WLC</text>
+
+    <line x1="232" y1="334" x2="778" y2="334" stroke="#1D2026" stroke-width="2" marker-end="url(#a)"/>
+    <text x="505" y="326" text-anchor="middle">Join Request (modelo, MAC, dominio regulatorio)</text>
+    <line x1="778" y1="368" x2="232" y2="368" stroke="#1D2026" stroke-width="2" marker-end="url(#a)"/>
+    <text x="505" y="360" text-anchor="middle">Join Response (aceptado)</text>
+
+    <line x1="778" y1="418" x2="232" y2="418" stroke="#b91c1c" stroke-width="2" marker-end="url(#a)"/>
+    <text x="505" y="410" text-anchor="middle">Image Data solo si la versión difiere → el AP reinicia y repite 1–4</text>
+
+    <line x1="232" y1="468" x2="778" y2="468" stroke="#3D4450" stroke-width="2" marker-end="url(#a)"/>
+    <text x="505" y="460" text-anchor="middle">Configuration Status Request</text>
+    <line x1="778" y1="502" x2="232" y2="502" stroke="#3D4450" stroke-width="2" marker-end="url(#a)"/>
+    <text x="505" y="494" text-anchor="middle">Configuración (tags, SSID, VLAN) → estado Run</text>
+  </g>
+</svg>

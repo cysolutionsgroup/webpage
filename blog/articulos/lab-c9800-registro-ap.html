@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio: registro y configuración básica de un AP en una Cisco Catalyst 9800 | Blog CY Solutions</title>
+<meta name="description" content="Registro de un AP en una Catalyst 9800-CL de tres formas (opción 43, broadcast y consola) y dos SSID en FlexConnect, uno con portal cautivo, paso a paso por GUI y CLI en equipos reales.">
+<link rel="canonical" href="https://cysolutionsgroup.com/blog/articulos/lab-c9800-registro-ap.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Laboratorio: registro y configuración básica de un AP en una Cisco Catalyst 9800 | Blog CY Solutions">
+<meta property="og:description" content="Registro de un AP en una Catalyst 9800-CL de tres formas (opción 43, broadcast y consola) y dos SSID en FlexConnect, uno con portal cautivo, paso a paso por GUI y CLI en equipos reales.">
+<meta property="og:url" content="https://cysolutionsgroup.com/blog/articulos/lab-c9800-registro-ap.html">
+<meta property="og:image" content="https://cysolutionsgroup.com/assets/img/logo-cy-solutions.jpg">
+<meta name="theme-color" content="#E1252F">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Libre+Caslon+Text:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body data-root="../../">
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../index.html" aria-label="CY Solutions Group S.A.S, inicio">
+      <svg class="logo-mark" viewBox="-30 -30 620 600" aria-hidden="true">
+<g stroke-width="10" stroke-linecap="round"><line x1="263" y1="23" x2="476" y2="92"/><line x1="263" y1="23" x2="310" y2="260"/><line x1="476" y1="92" x2="310" y2="260"/><line x1="140" y1="150" x2="50" y2="238"/><line x1="140" y1="150" x2="310" y2="260"/><line x1="50" y1="238" x2="310" y2="260"/><line x1="50" y1="238" x2="55" y2="468"/><line x1="55" y1="468" x2="220" y2="430"/><line x1="310" y1="260" x2="545" y2="315"/><line x1="310" y1="260" x2="542" y2="412"/><line x1="545" y1="315" x2="542" y2="412"/><line x1="310" y1="260" x2="390" y2="520"/><line x1="390" y1="520" x2="542" y2="412"/></g>
+<g class="dot"><circle cx="263" cy="23" r="26"/><circle cx="140" cy="150" r="24"/><circle cx="545" cy="315" r="26"/><circle cx="542" cy="412" r="26"/></g>
+<g class="ring" stroke-width="18"><circle cx="310" cy="260" r="58"/><circle cx="476" cy="92" r="31"/><circle cx="50" cy="238" r="31"/><circle cx="55" cy="468" r="23"/><circle cx="390" cy="520" r="23"/></g>
+</svg>
+      <span class="brand-text"><strong>CY SOLUTIONS</strong><span>GROUP S.A.S</span></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="../../index.html#servicios">Servicios</a>
+      <a href="../../index.html#seguridad-electronica">Seguridad electrónica</a>
+      <a href="../../index.html#nosotros">Nosotros</a>
+      <a href="../../blog/index.html" aria-current="page">Blog</a>
+      <a class="btn btn--primary" href="../../index.html#contacto">Contáctenos</a>
+    </nav>
+  </div>
+</header>
+<main id="contenido" class="article">
+  <div class="wrap">
+    <p class="crumbs"><a href="../../index.html">Inicio</a> / <a href="../../blog/index.html">Blog</a> / Laboratorios</p>
+    <article>
+      <header>
+        <h1>Laboratorio: registro y configuración básica de un AP en una Cisco Catalyst 9800</h1>
+        <div class="meta"><span class="cat">Laboratorios</span><time datetime="2026-11-20">20 nov 2026</time><span>18 min de lectura</span><span>Por Equipo técnico de CY Solutions</span></div>
+      </header>
+      <div class="prose">
+
+<p>Un access point Cisco Catalyst no trabaja solo: necesita encontrar su controladora, autenticarse con ella y recibir de ella toda su configuración. En este laboratorio se registra un AP en una Catalyst 9800-CL (la controladora virtual) de tres formas (con la opción 43 de DHCP, por broadcast y desde la consola del AP) y se deja publicando dos SSID: uno corporativo con clave y uno de invitados con portal cautivo. Cada paso de la controladora tiene su versión por interfaz web (GUI) y por línea de comandos (CLI), y todo se ejecutó y verificó en equipos reales.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Duración</th><th>Equipos</th><th>SSID</th><th>Software probado</th></tr></thead>
+  <tbody><tr><td>~60 min</td><td>Controladora C9800-CL, switch capa 3 y un AP Cisco</td><td>CY-Corp (WPA2-PSK) y CY-Invitados (portal cautivo)</td><td>IOS-XE 17.15.6 en la controladora</td></tr></tbody>
+</table>
+</div>
+
+<h2>Qué se necesita para montar el laboratorio</h2>
+<p>La controladora es virtual, así que lo único que tiene que ser físico es el AP. La tabla muestra el mínimo necesario y, como referencia, los equipos con que se probó esta guía:</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Componente</th><th>Mínimo necesario</th><th>Referencia usada en esta guía</th><th>¿Físico o virtual?</th></tr></thead>
+  <tbody>
+    <tr><td>Access point</td><td>Un AP Cisco con imagen CAPWAP compatible con IOS-XE 17.15 (Aironet Wave 2 o Catalyst 9100)</td><td>Cisco Aironet 2802I</td><td><strong>Físico, obligatorio.</strong> Es el único equipo que no se puede emular.</td></tr>
+    <tr><td>Alimentación del AP</td><td>Inyector PoE o puerto de switch con PoE+ (802.3at)</td><td>Inyector PoE</td><td>Físico, va con el AP</td></tr>
+    <tr><td>Controladora</td><td>Catalyst 9800-CL en un hipervisor (Hyper-V, VMware ESXi o KVM)</td><td>9800-CL 17.15.6 en Windows 11 + Hyper-V</td><td>Virtual</td></tr>
+    <tr><td>Switch</td><td>Switch capa 3 con VLAN, troncal 802.1Q y servidor DHCP</td><td>Cisco Catalyst C1000-24T-4X-L (sin PoE)</td><td>Físico. Lo puede reemplazar cualquier switch con esas funciones</td></tr>
+    <tr><td>Red de la controladora</td><td>Una LAN con salida a internet y un router donde se puedan crear rutas estáticas</td><td>Router de la casa, LAN 192.168.1.0/24</td><td>Físico (el que ya exista)</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="callout">
+  <p><strong>Versión mínima:</strong> si se quiere emular todo lo posible, basta con la controladora virtual y un AP. El AP se conecta a la misma LAN de la controladora y se registra por broadcast (opción B de la sección 3). Sin el switch no hay VLAN 20 y 30, así que los dos SSID salen en la LAN. Para separar el tráfico como en esta guía sí hace falta el switch.</p>
+</div>
+
+<h3>Requisitos del equipo que corre la controladora</h3>
+<p>Para un laboratorio alcanza con el perfil más pequeño de la 9800-CL, <strong>Ultra-Low</strong>:</p>
+<ul>
+  <li><strong>Máquina virtual:</strong> 2 vCPU, 6 GB de memoria y 16 GB de disco.</li>
+  <li><strong>Equipo anfitrión:</strong> Windows 10/11 Pro o Windows Server con Hyper-V, y la virtualización (Intel VT-x o AMD-V) activada en la BIOS. Se recomiendan 16 GB de RAM en el anfitrión, para que le queden 6 GB a la máquina virtual sin afectar al resto del equipo.</li>
+  <li><strong>Red:</strong> la máquina virtual va en un switch virtual <em>externo</em>, unido a la tarjeta de red del anfitrión, para que quede en la misma LAN que el router.</li>
+  <li><strong>Imagen:</strong> la 9800-CL se descarga de software.cisco.com con una cuenta Cisco.</li>
+</ul>
+
+<h2>Objetivo</h2>
+<ul>
+  <li>Preparar el switch: VLAN de gestión, de invitados y corporativa, con DHCP para cada una.</li>
+  <li>Registrar el AP en la controladora de tres formas: con la opción 43 de DHCP, por broadcast y forzándolo desde la consola del AP.</li>
+  <li>Dar al AP su nombre y su controladora primaria.</li>
+  <li>Publicar dos SSID con el modelo de perfiles y tags de la 9800, cada uno en su VLAN.</li>
+  <li>Mostrar a los invitados un mensaje de bienvenida (portal cautivo) antes de dejarlos navegar.</li>
+</ul>
+
+<h2>Topología</h2>
+<p>Primero, cómo está cableado el laboratorio:</p>
+<figure>
+  <div class="table-scroll"><img class="diagram" style="min-width:640px" src="../../assets/img/blog/lab-c9800-topologia-fisica.svg" width="1000" height="660" alt="Topología física: internet llega al router de la LAN 192.168.1.1. Del router salen un cable a un equipo Windows 11 con Hyper-V, que corre la controladora virtual C9800-CL 192.168.1.7, y otro al puerto Gi1/0/24 del switch CYLab_sw1. Del puerto Gi1/0/15 sale un troncal 802.1Q con VLAN nativa 10 y VLAN 20 y 30 hacia un inyector PoE y el AP-LAB-01. El AP publica CY-Invitados en la VLAN 20 con portal cautivo y CY-Corp en la VLAN 30. Entre el AP y la controladora viaja el túnel de control CAPWAP."></div>
+  <figcaption>Topología física: equipos, puertos y cables. La controladora es una máquina virtual en un equipo Windows 11 con Hyper-V.</figcaption>
+</figure>
+<p>Y cómo se comunican los equipos entre sí:</p>
+<figure>
+  <div class="table-scroll"><img class="diagram" style="min-width:620px" src="../../assets/img/blog/lab-c9800-topologia.svg" width="900" height="470" alt="Topología: controladora virtual C9800-CL en 192.168.1.7, en la LAN 192.168.1.0/24, conectada a través del router de la LAN al puerto Gi1/0/24 del switch CYLab_sw1. El switch tiene las VLAN 10, 20 y 30 y entrega DHCP con opción 43. El AP-LAB-01 está en Gi1/0/15, troncal con VLAN nativa 10 y VLAN 20 y 30. Entre el AP y la controladora viaja solo el control CAPWAP; los SSID CY-Corp y CY-Invitados salen en las VLAN 30 y 20."></div>
+  <figcaption>Topología lógica: el switch enruta entre la LAN 192.168.1.0/24 y las VLAN del laboratorio; entre el AP y la controladora solo viaja el control CAPWAP.</figcaption>
+</figure>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>VLAN</th><th>Nombre</th><th>Uso</th><th>Red</th><th>Puerta de enlace</th></tr></thead>
+  <tbody>
+    <tr><td>10</td><td>GESTION</td><td>Gestión del switch y de los AP</td><td>10.10.10.0/24</td><td>10.10.10.1</td></tr>
+    <tr><td>20</td><td>INVITADOS</td><td>Clientes del SSID CY-Invitados</td><td>10.10.20.0/24</td><td>10.10.20.1</td></tr>
+    <tr><td>30</td><td>CORPORATIVA</td><td>Clientes del SSID CY-Corp</td><td>10.10.30.0/24</td><td>10.10.30.1</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Equipo</th><th>Tipo</th><th>Dirección</th><th>Conexión</th></tr></thead>
+  <tbody>
+    <tr><td>Controladora WLC</td><td>Catalyst 9800-CL (virtual), IOS-XE 17.15.6</td><td>192.168.1.7</td><td>LAN 192.168.1.0/24, llega al switch por Gi1/0/24</td></tr>
+    <tr><td>Switch CYLab_sw1</td><td>Switch capa 3</td><td>192.168.1.110</td><td>Gi1/0/24 hacia la LAN, Gi1/0/15 hacia el AP</td></tr>
+    <tr><td>AP-LAB-01</td><td>Access point Cisco con imagen CAPWAP</td><td>10.10.10.x por DHCP</td><td>Gi1/0/15 con inyector PoE</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>¿Por qué FlexConnect?</h3>
+<p>Un AP registrado en una 9800 trabaja en uno de dos modos, y la diferencia está en por dónde viaja el tráfico de los clientes:</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th></th><th>Modo Local</th><th>FlexConnect con switching local</th></tr></thead>
+  <tbody>
+    <tr><td>Tráfico de los clientes</td><td>Viaja dentro del túnel CAPWAP hasta la controladora, y la controladora lo entrega en la red</td><td>El AP lo entrega directamente en la VLAN del switch donde está conectado</td></tr>
+    <tr><td>Qué viaja a la controladora</td><td>Control y datos</td><td>Solo el control (configuración, estado de los clientes)</td></tr>
+    <tr><td>Dónde viven las VLAN de los SSID</td><td>En la interfaz de la controladora</td><td>En el switch del AP</td></tr>
+    <tr><td>Uso típico</td><td>Campus, con la controladora en el mismo sitio</td><td>Sucursales y sitios remotos con una controladora central</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Lo decisivo en este laboratorio:</strong> se quiere que el tráfico de los clientes salga a internet por la red local, sin necesidad de llegar hasta la controladora. Con FlexConnect, un cliente de CY-Corp cae en la VLAN 30 del switch, el switch lo enruta al router y sale a internet; la controladora solo se entera de que el cliente se conectó. Además, la controladora es una máquina virtual que llega al switch a través del router de la LAN, por donde no pasan VLAN etiquetadas, así que en modo Local no podría entregar el tráfico en las VLAN 20 y 30.</p>
+
+<h2>Antes de empezar: la controladora lista</h2>
+<ul>
+  <li>La controladora con su configuración inicial (Day-0): usuario administrador, acceso HTTPS y SSH, interfaz de gestión inalámbrica, país y hora.</li>
+  <li>En la 9800-CL, el certificado autofirmado (SSC) que usan los AP para el join. Las controladoras físicas ya traen uno de fábrica.</li>
+</ul>
+<p>Antes de empezar, se confirma en la controladora que esos puntos ya están listos:</p>
+<p class="code-label">WLC (Cisco IOS-XE)</p>
+<pre><code>show wireless interface summary
+show wireless management trustpoint
+show wireless country configured</code></pre>
+<p>En este laboratorio la salida muestra la interfaz de gestión inalámbrica con 192.168.1.7, el trustpoint <code>WLC_WLC_TP</code> de tipo <code>SSC</code> y el país <code>CO - Colombia</code>. Si el país ya está configurado no hay que tocar las radios.</p>
+
+<h2>1. Switch: VLAN, DHCP y puerto del AP</h2>
+<p>El switch hace tres trabajos: enruta entre las VLAN del laboratorio y la LAN de la controladora, entrega las direcciones por DHCP y conecta el AP con un troncal.</p>
+<p>El pool de gestión lleva la <strong>opción 43</strong>, que le dice al AP dónde está la controladora. El valor es <code>f1</code> (tipo), <code>04</code> (4 bytes por cada controladora) y la IP en hexadecimal: 192 = <code>c0</code>, 168 = <code>a8</code>, 1 = <code>01</code>, 7 = <code>07</code>. Resultado: <code>f104.c0a8.0107</code>.</p>
+<p class="code-label">CYLab_sw1 (Cisco IOS 15.2)</p>
+<pre><code>vlan 10
+ name GESTION
+vlan 20
+ name INVITADOS
+vlan 30
+ name CORPORATIVA
+!
+interface Vlan10
+ description Gestion switch y APs
+ ip address 10.10.10.1 255.255.255.0
+ no shutdown
+interface Vlan20
+ description SSID invitados
+ ip address 10.10.20.1 255.255.255.0
+ no shutdown
+interface Vlan30
+ description SSID corporativo
+ ip address 10.10.30.1 255.255.255.0
+ no shutdown
+!
+ip dhcp excluded-address 10.10.10.1 10.10.10.10
+ip dhcp excluded-address 10.10.20.1 10.10.20.10
+ip dhcp excluded-address 10.10.30.1 10.10.30.10
+!
+ip dhcp pool GESTION
+ network 10.10.10.0 255.255.255.0
+ default-router 10.10.10.1
+ dns-server 8.8.8.8
+ option 43 hex f104.c0a8.0107
+ip dhcp pool INVITADOS
+ network 10.10.20.0 255.255.255.0
+ default-router 10.10.20.1
+ dns-server 8.8.8.8
+ip dhcp pool CORPORATIVA
+ network 10.10.30.0 255.255.255.0
+ default-router 10.10.30.1
+ dns-server 8.8.8.8
+!
+interface GigabitEthernet1/0/15
+ description AP-LAB-01
+ switchport trunk native vlan 10
+ switchport trunk allowed vlan 10,20,30
+ switchport mode trunk
+ spanning-tree portfast trunk
+end
+write memory</code></pre>
+<p>El puerto del AP es un <strong>troncal</strong>: la VLAN nativa (sin etiqueta) es la de gestión, por donde el AP pide su IP y habla con la controladora, y las VLAN 20 y 30 van etiquetadas para los SSID.</p>
+<p>Para que el switch pase tráfico entre las VLAN y hacia la LAN, necesita sus funciones de enrutamiento. Por defecto un switch solo conmuta dentro de cada VLAN; <code>ip routing</code> lo convierte en un router entre sus interfaces VLAN. Además, se le da una ruta por defecto hacia el router de la LAN para todo lo que no conoce (internet y la controladora):</p>
+<p class="code-label">CYLab_sw1 (Cisco IOS 15.2)</p>
+<pre><code>ip routing
+ip route 0.0.0.0 0.0.0.0 192.168.1.1
+end
+write memory</code></pre>
+<p>Para que las VLAN del laboratorio salgan a internet, el router de la LAN necesita saber que esas redes están detrás del switch. En el router se agregan tres rutas estáticas:</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Red destino</th><th>Máscara</th><th>Siguiente salto</th></tr></thead>
+  <tbody>
+    <tr><td>10.10.10.0</td><td>255.255.255.0</td><td>192.168.1.110 (CYLab_sw1)</td></tr>
+    <tr><td>10.10.20.0</td><td>255.255.255.0</td><td>192.168.1.110 (CYLab_sw1)</td></tr>
+    <tr><td>10.10.30.0</td><td>255.255.255.0</td><td>192.168.1.110 (CYLab_sw1)</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Así el router devuelve al switch el tráfico de esas redes y lo traduce (NAT) hacia internet. Para comprobarlo, desde el switch se hace ping a internet con origen en cada VLAN:</p>
+<p class="code-label">CYLab_sw1 (Cisco IOS 15.2)</p>
+<pre><code>ping 8.8.8.8 source Vlan10
+ping 8.8.8.8 source Vlan20
+ping 8.8.8.8 source Vlan30</code></pre>
+<p>En el laboratorio las tres VLAN respondieron, y desde un equipo de la LAN el <code>tracert</code> a 10.10.30.1 pasa por 192.168.1.1 y luego por el switch.</p>
+
+<h2>2. Controladora: ruta hacia la VLAN de gestión</h2>
+<p>El AP está en 10.10.10.0/24 y la controladora en 192.168.1.0/24. Aunque el router de la LAN ya conoce esa red, conviene que la controladora la alcance directo por el switch, sin dar la vuelta por el router:</p>
+<p><strong>Por GUI:</strong> <em>Configuration › Routing Protocols › Static Routing › + Add</em>. Prefix <code>10.10.10.0</code>, Prefix Mask <code>255.255.255.0</code>, Route Path <em>Next Hop IP</em> y NextHop IP <code>192.168.1.110</code>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-01.png" width="588" height="443" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Ruta estática hacia 10.10.10.0/24 por el switch (192.168.1.110).">
+  <figcaption>Ruta estática hacia 10.10.10.0/24 por el switch (192.168.1.110).</figcaption>
+</figure>
+<p><strong>Por CLI:</strong></p>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>configure terminal
+ip route 10.10.10.0 255.255.255.0 192.168.1.110
+end
+write memory</code></pre>
+
+<h2>3. Registro del AP</h2>
+<p>Con la red lista, se conecta el AP. El registro sigue estas fases:</p>
+<figure>
+  <div class="table-scroll"><img class="diagram" style="min-width:620px" src="../../assets/img/blog/lab-c9800-join-capwap.svg" width="900" height="560" alt="Secuencia del registro: DHCP con o sin opción 43, CAPWAP Discovery Request por unicast o broadcast, Discovery Response, handshake DTLS con el certificado SSC de la controladora, Join Request y Response, descarga de imagen solo si la versión difiere y configuración hasta el estado Run."></div>
+  <figcaption>La diferencia entre las tres opciones está en la fase 2: cómo sabe el AP a quién preguntarle por una controladora.</figcaption>
+</figure>
+<p>Para el descubrimiento, el AP usa en orden la controladora que ya conoce, la opción 43, el DNS (<code>CISCO-CAPWAP-CONTROLLER</code>) y un broadcast en su propia subred.</p>
+<p>Usualmente los AP vienen de fábrica. Si el AP no tiene la configuración de fábrica (por ejemplo, ya estuvo registrado en otra controladora), primero se deja de fábrica siguiendo la guía oficial de Cisco: <a href="https://www.cisco.com/c/en/us/support/docs/wireless/aironet-1200-series/99763-reset-lwappconfig-lap.html" target="_blank" rel="noopener">Reset the CAPWAP Configuration on IOS and ClickOS APs</a>. Hecho esto, se registra con cualquiera de las opciones A, B o C.</p>
+
+<h3>Opción A: con opción 43</h3>
+<p>Es el método para cuando el AP y la controladora están en redes distintas, como en este laboratorio. No hay nada más que configurar: el pool <code>GESTION</code> del paso 1 ya entrega la opción 43.</p>
+<ol>
+  <li>El AP pide IP en la VLAN 10 y recibe 10.10.10.12 con la opción 43.</li>
+  <li>Envía el Discovery Request por unicast a 192.168.1.7.</li>
+  <li>El switch lo enruta y la controladora responde por la ruta del paso 2.</li>
+</ol>
+<p>Resultado en el laboratorio: después de borrar su configuración, el AP quedó registrado en unos 5 minutos.</p>
+
+<h3>Opción B: sin opción 43 (broadcast en la misma subred)</h3>
+<p>Si el AP está en la misma subred que la interfaz de gestión de la controladora, no necesita la opción 43: envía un Discovery Request por broadcast y la controladora responde. Es el método más simple, pero obliga a que AP y controladora compartan VLAN.</p>
+<p>Para probarlo, el puerto del AP se pasó temporalmente a la VLAN de la LAN 192.168.1.0/24, donde está la controladora. Ahí el DHCP es el router de la LAN, que no entrega opción 43:</p>
+<p class="code-label">CYLab_sw1 (Cisco IOS 15.2)</p>
+<pre><code>interface GigabitEthernet1/0/15
+ switchport trunk native vlan &lt;VLAN-de-la-LAN&gt;
+ switchport trunk allowed vlan &lt;VLAN-de-la-LAN&gt;,10,20,30</code></pre>
+<p>Resultado en el laboratorio: con la configuración borrada, el AP recibió 192.168.1.29 del router, encontró la controladora por broadcast y quedó registrado en unos 5 minutos. Luego el puerto volvió a la VLAN nativa 10 (configuración del paso 1).</p>
+<div class="callout"><p>Otro método sin opción 43 es un registro DNS <code>CISCO-CAPWAP-CONTROLLER.&lt;dominio&gt;</code> que apunte a la controladora. En switches que lo soportan también se puede reenviar el broadcast a otra subred con <code>ip forward-protocol udp 5246</code>. El switch de este laboratorio no tiene ese comando ni servidor DNS, por eso no se incluyen.</p></div>
+
+<h3>Opción C: forzar la controladora desde la consola del AP</h3>
+<p>Cuando el AP no puede descubrir la controladora por sí solo (sin opción 43, sin DNS y en otra subred), se le indica a mano. En el laboratorio se comprobó: sin la opción 43 en el pool <code>GESTION</code> y con la configuración borrada, el AP recibió 10.10.10.12 pero la controladora mostró <code>Number of APs: 0</code> durante más de 5 minutos.</p>
+<p>Un AP de fábrica que no se ha registrado no acepta SSH, así que este paso se hace por el <strong>puerto de consola</strong>: 9600 baudios, 8 bits, sin paridad, 1 bit de parada. Las credenciales de fábrica son <code>Cisco</code> / <code>Cisco</code>.</p>
+<p class="code-label">AP (consola, AP-COS)</p>
+<pre><code>AP78BC.1A6B.A124&gt; enable
+Password: Cisco
+AP78BC.1A6B.A124# capwap ap primary-base WLC 192.168.1.7
+AP78BC.1A6B.A124# show capwap client rcb</code></pre>
+<p>El primer valor es el nombre de la controladora (su hostname) y el segundo su IP de gestión. El AP guarda el dato y envía el Discovery Request directamente a esa IP, aunque esté en otra subred.</p>
+<p>Si el AP ya está registrado, no hace falta la consola: la controladora primaria se fija desde la controladora, como se ve en el paso 4.</p>
+
+<h3>Verificar el registro</h3>
+<p><strong>Por GUI:</strong> <em>Monitoring › Wireless › AP Statistics</em>, o <em>Configuration › Wireless › Access Points</em>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-02.png" width="1643" height="351" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Monitoring › Wireless › AP Statistics: el AP registrado, con su IP de la VLAN 10 y su Policy Tag.">
+  <figcaption>Monitoring › Wireless › AP Statistics: el AP registrado, con su IP de la VLAN 10 y su Policy Tag.</figcaption>
+</figure>
+<p><strong>Por CLI:</strong></p>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>show ap summary
+show wireless stats ap join summary
+show wireless stats ap discovery</code></pre>
+<p>Salida real del laboratorio, recortada:</p>
+<pre><code>AP Name           Ethernet MAC    Radio MAC       CC  IP Address   State
+AP78BC.1A6B.A124  78bc.1a6b.a124  5c5a.c76e.f380  CO  10.10.10.12  Registered
+
+Base MAC        Ethernet MAC    IP Address   Status  Last Failure Phase  Last Disconnect Reason
+5c5a.c76e.f380  78bc.1a6b.a124  10.10.10.12  Joined  Run                 Wtp Clear config</code></pre>
+<p>El nombre por defecto del AP es <code>AP</code> seguido de su MAC Ethernet. <code>Wtp Clear config</code> solo indica que la última desconexión fue el borrado hecho a propósito.</p>
+
+<h2>4. Nombre y controladora primaria del AP</h2>
+<p>La controladora primaria queda guardada en el AP. Así, aunque un día cambie el DHCP, el AP sabe a dónde volver.</p>
+<p><strong>Por GUI:</strong> <em>Configuration › Wireless › Access Points</em>, clic en el AP. En la pestaña <em>General</em> se cambia <em>AP Name</em> a <code>AP-LAB-01</code>. En la pestaña <em>High Availability</em>, en <em>Primary Controller</em>, se escriben el nombre <code>WLC</code> y la IP <code>192.168.1.7</code>, y se aplica con <em>Update &amp; Apply to Device</em>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-03.png" width="403" height="744" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Pestaña General del AP: nombre AP-LAB-01 y modo Flex.">
+  <figcaption>Pestaña General del AP: nombre AP-LAB-01 y modo Flex.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-04.png" width="723" height="315" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Pestaña High Availability: controladora primaria WLC / 192.168.1.7.">
+  <figcaption>Pestaña High Availability: controladora primaria WLC / 192.168.1.7.</figcaption>
+</figure>
+<p><strong>Por CLI</strong> (en modo privilegiado, no en modo configuración):</p>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>ap name AP78BC.1A6B.A124 name AP-LAB-01
+ap name AP-LAB-01 controller primary WLC 192.168.1.7
+write memory</code></pre>
+<p>El nombre <code>WLC</code> es el hostname de la controladora; debe coincidir con el que muestra el prompt.</p>
+
+<h2>5. Perfiles, SSID y tags</h2>
+<p>La 9800 no asigna un SSID directamente a un AP. La configuración se agrupa en perfiles, los perfiles en tres tags, y los tags se asignan al AP:</p>
+<figure>
+  <div class="table-scroll"><img class="diagram" style="min-width:620px" src="../../assets/img/blog/lab-c9800-tags.svg" width="900" height="450" alt="Modelo de tags del laboratorio: el Policy Tag TAG-POLICY-LAB une WLAN-CORP con POLICY-CORP en VLAN 30 y WLAN-INVITADOS con POLICY-INVITADOS en VLAN 20; el Site Tag TAG-SITE-LAB desactiva el sitio local, lo que pone el AP en FlexConnect, y usa el Flex profile FLEX-LAB con VLAN nativa 10 y VLAN 20 y 30; el RF Tag es el de fábrica. Los tres se asignan al AP por su MAC Ethernet."></div>
+  <figcaption>El orden de creación va de abajo hacia arriba: primero los perfiles, luego los tags que los agrupan y al final la asignación al AP.</figcaption>
+</figure>
+
+<h3>5.1 Flex profile: las VLAN que conoce el AP</h3>
+<p><strong>Por GUI:</strong> <em>Configuration › Tags &amp; Profiles › Flex › + Add</em>. En <em>General</em>: Name <code>FLEX-LAB</code>, Native VLAN ID <code>10</code>. En la pestaña <em>VLAN</em>, <em>+ Add</em> dos veces: <code>INVITADOS</code> con ID <code>20</code> y <code>CORPORATIVA</code> con ID <code>30</code>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-05.png" width="979" height="482" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Flex profile FLEX-LAB, pestaña General: VLAN nativa 10.">
+  <figcaption>Flex profile FLEX-LAB, pestaña General: VLAN nativa 10.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-06.png" width="688" height="240" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Flex profile FLEX-LAB, pestaña VLAN: INVITADOS (20) y CORPORATIVA (30).">
+  <figcaption>Flex profile FLEX-LAB, pestaña VLAN: INVITADOS (20) y CORPORATIVA (30).</figcaption>
+</figure>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>wireless profile flex FLEX-LAB
+ description "VLAN locales del AP"
+ native-vlan-id 10
+ vlan-name INVITADOS
+  vlan-id 20
+ vlan-name CORPORATIVA
+  vlan-id 30</code></pre>
+
+<h3>5.2 Policy profiles: una política por SSID</h3>
+<p>La política dice en qué VLAN caen los clientes y que el tráfico se conmute en el AP (switching local).</p>
+<p>Dos opciones de la política deciden por dónde va el tráfico, y ambas vienen activadas por defecto:</p>
+<ul>
+  <li><strong>Central Switching:</strong> activada, el tráfico de los clientes viaja dentro del túnel CAPWAP hasta la controladora, que lo entrega en su propia VLAN (comportamiento central, como en modo Local). Desactivada, el AP lo entrega directamente en la VLAN del switch.</li>
+  <li><strong>Central DHCP:</strong> activada, las solicitudes DHCP de los clientes también viajan a la controladora. Desactivada, el cliente pide su IP en la VLAN local y se la entrega el DHCP del switch.</li>
+</ul>
+<p>Como en este laboratorio las VLAN 20 y 30 y sus pools DHCP están en el switch, las dos se desactivan. Si quedaran activas, el tráfico intentaría llegar a una controladora que no tiene esas VLAN y el cliente se quedaría sin IP.</p>
+<p><strong>Por GUI:</strong> <em>Configuration › Tags &amp; Profiles › Policy › + Add</em>. En <em>General</em>: Name <code>POLICY-CORP</code>, Status <em>Enabled</em>, y se desmarcan <em>Central Switching</em> y <em>Central DHCP</em>. En <em>Access Policies</em>, VLAN/VLAN Group <code>30</code>. Se repite para <code>POLICY-INVITADOS</code> con la VLAN <code>20</code>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-07.png" width="889" height="515" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="POLICY-CORP, pestaña General: Central Switching y Central DHCP desactivados.">
+  <figcaption>POLICY-CORP, pestaña General: Central Switching y Central DHCP desactivados.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-08.png" width="904" height="481" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="POLICY-CORP, pestaña Access Policies: VLAN 30.">
+  <figcaption>POLICY-CORP, pestaña Access Policies: VLAN 30.</figcaption>
+</figure>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>wireless profile policy POLICY-CORP
+ description "Corporativa - VLAN 30"
+ no central switching
+ no central dhcp
+ vlan 30
+ no shutdown
+!
+wireless profile policy POLICY-INVITADOS
+ description "Invitados - VLAN 20"
+ no central switching
+ no central dhcp
+ vlan 20
+ no shutdown</code></pre>
+
+<h3>5.3 WLAN: los dos SSID</h3>
+<p><strong>Por GUI:</strong> <em>Configuration › Tags &amp; Profiles › WLANs › + Add</em>.</p>
+<ul>
+  <li><strong>CY-Corp:</strong> en <em>General</em>, Profile Name <code>WLAN-CORP</code>, SSID <code>CY-Corp</code>, WLAN ID <code>1</code>, Status <em>Enabled</em>. En <em>Security › Layer2</em>: modo <em>WPA + WPA2</em>, con <em>WPA2 Policy</em> y cifrado <em>AES (CCMP128)</em>; en <em>Auth Key Mgmt</em> se desmarca 802.1X y se marca PSK; en <em>Pre-Shared Key</em>, formato ASCII y la clave <code>CYSolutions</code>.</li>
+  <li><strong>CY-Invitados:</strong> Profile Name <code>WLAN-INVITADOS</code>, SSID <code>CY-Invitados</code>, WLAN ID <code>2</code>, Status <em>Enabled</em>. En <em>Security › Layer2</em>, Layer 2 Security Mode <em>None</em> (red abierta).</li>
+</ul>
+<p>Por qué esa seguridad en CY-Corp:</p>
+<ul>
+  <li><strong>WPA + WPA2 con solo WPA2 Policy:</strong> el modo agrupa las dos versiones, pero solo se marca WPA2. WPA (la primera versión, con TKIP) es antigua y vulnerable; WPA2 la soportan prácticamente todos los clientes.</li>
+  <li><strong>Cifrado AES (CCMP128):</strong> es el cifrado de WPA2. Usa AES, el mismo estándar que se usa en VPN y en banca, con llaves de 128 bits; hoy no tiene ataques prácticos conocidos. Cada cliente negocia llaves propias en el saludo inicial (4-way handshake), así que un cliente no puede leer el tráfico de otro aunque compartan la clave.</li>
+  <li><strong>PSK en lugar de 802.1X:</strong> 802.1X autentica a cada usuario contra un servidor RADIUS (un NAC como Cisco ISE o ClearPass). En este laboratorio no se quiere un NAC sobre la red, así que se desmarca 802.1X y todos usan una clave compartida (PSK).</li>
+</ul>
+<p>Por qué <em>None</em> en CY-Invitados: la seguridad de capa 2 actúa antes de que el cliente tenga IP, al asociarse con el AP. Si pidiera una clave, el invitado tendría que conocerla antes de ver el mensaje. El portal cautivo trabaja en capa 3: el cliente se asocia sin clave, recibe IP, y cuando abre el navegador la controladora intercepta esa primera petición web y le muestra el portal. Hasta que acepta, solo puede usar DHCP y DNS. Por eso la capa 2 queda abierta y el control lo hace el portal (paso 6).</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-09.png" width="806" height="435" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="WLAN-CORP, pestaña General: SSID CY-Corp, WLAN ID 1.">
+  <figcaption>WLAN-CORP, pestaña General: SSID CY-Corp, WLAN ID 1.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-10.png" width="871" height="744" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="WLAN-CORP, Security › Layer2: WPA + WPA2 con WPA2 Policy, AES (CCMP128) y PSK.">
+  <figcaption>WLAN-CORP, Security › Layer2: WPA + WPA2 con WPA2 Policy, AES (CCMP128) y PSK.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-11.png" width="877" height="708" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="WLAN-INVITADOS, Security › Layer2: None.">
+  <figcaption>WLAN-INVITADOS, Security › Layer2: None.</figcaption>
+</figure>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>wlan WLAN-CORP 1 CY-Corp
+ no security wpa akm dot1x
+ security wpa akm psk
+ security wpa psk set-key ascii 0 CYSolutions
+ no shutdown
+!
+wlan WLAN-INVITADOS 2 CY-Invitados
+ no security wpa
+ no security wpa wpa2
+ no security wpa akm dot1x
+ no security ft adaptive
+ no shutdown</code></pre>
+<p>Una WLAN nueva nace con WPA2 y 802.1X. Por eso en el SSID corporativo se cambia 802.1X por PSK, y al de invitados se le quita la seguridad de capa 2.</p>
+
+<h3>5.4 Policy Tag y Site Tag</h3>
+<p><strong>Por GUI:</strong> <em>Configuration › Tags &amp; Profiles › Tags</em>.</p>
+<ul>
+  <li>Pestaña <em>Policy › + Add</em>: Name <code>TAG-POLICY-LAB</code>. En <em>WLAN-POLICY Maps › + Add</em>, una a una: <code>WLAN-CORP</code> → <code>POLICY-CORP</code> y <code>WLAN-INVITADOS</code> → <code>POLICY-INVITADOS</code>.</li>
+  <li>Pestaña <em>Site › + Add</em>: Name <code>TAG-SITE-LAB</code>; se desmarca <em>Enable Local Site</em> y en <em>Flex Profile</em> se elige <code>FLEX-LAB</code>. El AP Join Profile queda en <code>default-ap-profile</code>.</li>
+</ul>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-12.png" width="832" height="458" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Policy Tag TAG-POLICY-LAB con sus dos mapeos WLAN → Policy.">
+  <figcaption>Policy Tag TAG-POLICY-LAB con sus dos mapeos WLAN → Policy.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-13.png" width="448" height="301" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Site Tag TAG-SITE-LAB: Enable Local Site desmarcado y Flex Profile FLEX-LAB.">
+  <figcaption>Site Tag TAG-SITE-LAB: Enable Local Site desmarcado y Flex Profile FLEX-LAB.</figcaption>
+</figure>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>wireless tag policy TAG-POLICY-LAB
+ description "SSID del laboratorio"
+ wlan WLAN-CORP policy POLICY-CORP
+ wlan WLAN-INVITADOS policy POLICY-INVITADOS
+!
+wireless tag site TAG-SITE-LAB
+ description "Sitio FlexConnect del laboratorio"
+ no local-site
+ flex-profile FLEX-LAB</code></pre>
+<p>Desmarcar el sitio local es lo que convierte el AP en FlexConnect.</p>
+
+<h3>5.5 Asignar los tags al AP</h3>
+<div class="callout"><p><strong>Corte breve:</strong> al cambiar el Site Tag o el Policy Tag, el AP cierra y vuelve a levantar su conexión con la controladora. En el laboratorio volvió en menos de un minuto. En producción conviene hacerlo en una ventana de mantenimiento.</p></div>
+<p><strong>Por GUI:</strong> <em>Configuration › Tags &amp; Profiles › Tags › AP › Static › + Add</em>. AP MAC Address <code>78bc.1a6b.a124</code> (la MAC Ethernet que muestra <code>show ap summary</code>), Policy Tag <code>TAG-POLICY-LAB</code>, Site Tag <code>TAG-SITE-LAB</code>, RF Tag <code>default-rf-tag</code>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-14.png" width="361" height="294" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Asignación estática de los tres tags por la MAC Ethernet del AP.">
+  <figcaption>Asignación estática de los tres tags por la MAC Ethernet del AP.</figcaption>
+</figure>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>ap 78bc.1a6b.a124
+ policy-tag TAG-POLICY-LAB
+ site-tag TAG-SITE-LAB
+ rf-tag default-rf-tag
+end
+write memory</code></pre>
+<p>Esta es una asignación <strong>estática por MAC</strong>: queda escrita en la configuración de la controladora (el bloque <code>ap 78bc.1a6b.a124</code>), no en el AP. Por eso, si el AP se reinicia o se deja de fábrica, al registrarse de nuevo la controladora reconoce su MAC y le vuelve a dar los mismos tags.</p>
+<p>No es la única forma de darle tags a un AP, y no todas sobreviven a un reset de fábrica. La controladora decide qué tags usa según su origen (<em>Tag Source</em>), en este orden de prioridad:</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Prioridad</th><th>Origen</th><th>Dónde queda guardado</th><th>¿Sobrevive a un reset de fábrica del AP?</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><strong>Static</strong> (la de esta guía)</td><td>En la controladora, por la MAC Ethernet del AP</td><td>Sí</td></tr>
+    <tr><td>2</td><td>Location</td><td>En la controladora, por la ubicación asignada al AP</td><td>Sí</td></tr>
+    <tr><td>3</td><td>Filter</td><td>En la controladora, como regla por nombre del AP (expresión regular)</td><td>Solo si el AP vuelve con un nombre que cumpla la regla</td></tr>
+    <tr><td>4</td><td>AP</td><td>En la memoria del propio AP</td><td>No: el reset la borra</td></tr>
+    <tr><td>5</td><td>Default</td><td>Tags por defecto (<code>default-policy-tag</code>, etc.)</td><td>Es lo que recibe un AP sin ninguna de las anteriores: se registra, pero no publica los SSID del laboratorio</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Para confirmar de dónde tomó el AP sus tags se usa <code>show ap tag summary</code>: en este laboratorio la columna <em>Tag Source</em> dice <code>Static</code>. El orden de prioridad se ve con <code>show ap tag sources</code>.</p>
+
+<h2>6. Portal cautivo para invitados</h2>
+<p>Para que los invitados vean un mensaje antes de navegar, el SSID <code>CY-Invitados</code> usa autenticación web local de tipo <strong>consent</strong>. Al conectarse, el teléfono abre una página con el mensaje y un botón para aceptar. No se pide usuario ni clave.</p>
+
+<h3>6.1 Dirección virtual del portal</h3>
+<p>La controladora sirve el portal desde una IP virtual que no existe en la red. Cisco recomienda una del rango de documentación, como 192.0.2.1.</p>
+<p><strong>Por GUI:</strong> <em>Configuration › Security › Web Auth</em>, clic en <code>global</code>. En <em>Virtual IPv4 Address</em> se escribe <code>192.0.2.1</code> y se aplica con <em>Update &amp; Apply</em>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-16.png" width="851" height="590" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Parameter map global: IP virtual 192.0.2.1.">
+  <figcaption>Parameter map global: IP virtual 192.0.2.1.</figcaption>
+</figure>
+
+<h3>6.2 Parameter map con el mensaje</h3>
+<p><strong>Por GUI:</strong> en la misma pantalla, <em>+ Add</em>. Parameter-map name <code>PORTAL-INVITADOS</code>, Type <em>consent</em>. En <em>Banner Configuration</em>: Banner Title con el título, Banner Type <em>Banner Text</em> y en Banner Text el mensaje, con Enter entre frases para que salga en varias líneas.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-17.png" width="864" height="579" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Parameter map PORTAL-INVITADOS: tipo consent, título y texto del mensaje.">
+  <figcaption>Parameter map PORTAL-INVITADOS: tipo consent, título y texto del mensaje.</figcaption>
+</figure>
+
+<h3>6.3 Aplicar el portal al SSID de invitados</h3>
+<p><strong>Por GUI:</strong> <em>Configuration › Tags &amp; Profiles › WLANs</em>, clic en <code>WLAN-INVITADOS</code>. En <em>Security › Layer3</em> se marca <em>Web Policy</em> y en <em>Web Auth Parameter Map</em> se elige <code>PORTAL-INVITADOS</code>. La seguridad de capa 2 sigue en <em>None</em>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-18.png" width="887" height="433" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="WLAN-INVITADOS, Security › Layer3: Web Policy con PORTAL-INVITADOS.">
+  <figcaption>WLAN-INVITADOS, Security › Layer3: Web Policy con PORTAL-INVITADOS.</figcaption>
+</figure>
+<p><strong>Por CLI</strong> (las tres partes):</p>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>parameter-map type webauth global
+ virtual-ip ipv4 192.0.2.1
+!
+parameter-map type webauth PORTAL-INVITADOS
+ type consent
+ banner title #Red de invitados - CY Solutions Group#
+ banner text #Bienvenido a la red de invitados de CY Solutions Group.
+Esta red es para uso personal y responsable.
+El trafico puede ser monitoreado.
+Para navegar, acepte las condiciones de uso.#
+!
+wlan WLAN-INVITADOS 2 CY-Invitados
+ shutdown
+ security web-auth
+ security web-auth parameter-map PORTAL-INVITADOS
+ no shutdown
+end
+write memory</code></pre>
+<p>El carácter <code>#</code> marca el inicio y el fin del mensaje, así que no debe usarse dentro del texto. El mensaje puede ocupar varias líneas: la controladora sigue leyendo hasta encontrar el segundo <code>#</code>. Conviene escribirlo en frases cortas, una por línea; el portal no interpreta HTML, así que etiquetas como <code>&lt;br&gt;</code> aparecen escritas tal cual. La controladora lo guarda con su propio delimitador (<code>^C</code>). La WLAN se apaga un momento mientras cambia su seguridad y los invitados conectados se desconectan.</p>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>show wlan name WLAN-INVITADOS | include Status|Webauth Parameter Map
+show running-config | begin parameter-map type webauth PORTAL-INVITADOS</code></pre>
+<p>Así lo vive el invitado en el teléfono (Android):</p>
+<div style="display:flex;flex-wrap:wrap;gap:1rem;margin:1.5rem 0">
+  <figure style="margin:0;flex:1 1 200px;max-width:260px">
+    <img src="../../assets/img/blog/lab-c9800-gui-19a.jpg" width="540" height="660" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="1. El teléfono avisa que la página de inicio de sesión usa un certificado no reconocido; se continúa con Continue anyway via browser.">
+    <figcaption>1. El teléfono avisa que la página de inicio de sesión usa un certificado no reconocido; se continúa con Continue anyway via browser.</figcaption>
+  </figure>
+  <figure style="margin:0;flex:1 1 200px;max-width:260px">
+    <img src="../../assets/img/blog/lab-c9800-gui-19.jpg" width="540" height="660" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="2. El portal con el título, el mensaje en varias líneas y el botón Accept.">
+    <figcaption>2. El portal con el título, el mensaje en varias líneas y el botón Accept.</figcaption>
+  </figure>
+  <figure style="margin:0;flex:1 1 200px;max-width:260px">
+    <img src="../../assets/img/blog/lab-c9800-gui-19c.jpg" width="540" height="660" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="3. Al pulsar Accept, la controladora confirma el consentimiento y el invitado ya puede navegar.">
+    <figcaption>3. Al pulsar Accept, la controladora confirma el consentimiento y el invitado ya puede navegar.</figcaption>
+  </figure>
+  <figure style="margin:0;flex:1 1 200px;max-width:260px">
+    <img src="../../assets/img/blog/lab-c9800-gui-19d.jpg" width="540" height="720" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="4. Detalles de la red: sin seguridad de capa 2, IP 10.10.20.11 y puerta de enlace 10.10.20.1 (VLAN 20).">
+    <figcaption>4. Detalles de la red: sin seguridad de capa 2, IP 10.10.20.11 y puerta de enlace 10.10.20.1 (VLAN 20).</figcaption>
+  </figure>
+</div>
+<h3>¿Por qué aparece un error de certificado?</h3>
+<p>El portal se sirve por HTTPS desde la IP virtual 192.0.2.1, y para cifrar esa conexión la controladora presenta un certificado. En este laboratorio es un certificado <strong>autofirmado</strong>: lo generó la propia controladora, no una entidad certificadora (CA) en la que confíe el teléfono. Además está emitido para una IP y no para un nombre de dominio. El teléfono no puede comprobar quién está detrás de la página, y por eso muestra el aviso <em>The network you’re trying to join has security issues</em> y la X roja junto a la dirección.</p>
+<p>La conexión sí va cifrada; lo que falta es que el teléfono pueda verificar la identidad del servidor.</p>
+<div class="callout"><p><strong>En este laboratorio no es necesario solucionarlo.</strong> El portal es de tipo consent: el invitado solo pulsa <em>Accept</em> y no escribe usuario, clave ni ningún otro dato. La red es de pruebas y se controla de punta a punta, así que basta con continuar en el navegador.</p></div>
+<p>En una red de invitados real sí conviene quitar el aviso, para que los usuarios no se acostumbren a ignorar alertas de seguridad. Para eso se necesita:</p>
+<ul>
+  <li>Un nombre de dominio para el portal (por ejemplo, <code>portal.empresa.com</code>), configurado en <em>Virtual IPv4 Hostname</em> del parameter map global y resuelto por DNS a la IP virtual.</li>
+  <li>Un certificado para ese nombre, emitido por una CA pública, importado en la controladora y elegido en el campo <em>Trustpoint</em> del parameter map global.</li>
+</ul>
+<p>Eso sale del alcance de esta guía.</p>
+
+<h2>7. Verificación final y prueba con un cliente</h2>
+<p class="code-label">WLC (Cisco IOS-XE 17.15)</p>
+<pre><code>show ap tag summary
+show ap name AP-LAB-01 config general | include Primary Cisco Controller|AP Mode
+show ap name AP-LAB-01 wlan dot11 5ghz
+show wlan summary</code></pre>
+<p>Salida real del laboratorio, recortada:</p>
+<pre><code>AP Name    AP Mac          Site Tag Name  Policy Tag Name  RF Tag Name     Misconfigured  Tag Source
+AP-LAB-01  78bc.1a6b.a124  TAG-SITE-LAB   TAG-POLICY-LAB   default-rf-tag  No             Static
+
+Primary Cisco Controller Name        : WLC
+Primary Cisco Controller IP Address  : 192.168.1.7
+AP Mode                              : FlexConnect
+
+ID  Profile Name    SSID          Status  Security
+1   WLAN-CORP       CY-Corp       UP      [WPA2][PSK][AES]
+2   WLAN-INVITADOS  CY-Invitados  UP      [open],[Web Auth]</code></pre>
+<p>Se conecta un teléfono a <code>CY-Corp</code> con la clave <code>CYSolutions</code>: debe recibir una IP de 10.10.30.0/24. En <code>CY-Invitados</code>, sin clave, debe aparecer el portal con el mensaje y, al aceptar, recibir una IP de 10.10.20.0/24 y navegar.</p>
+<p><strong>Por GUI:</strong> <em>Monitoring › Wireless › Clients</em>.</p>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-15.png" width="896" height="618" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Cliente conectado a CY-Corp a través de AP-LAB-01.">
+  <figcaption>Cliente conectado a CY-Corp a través de AP-LAB-01.</figcaption>
+</figure>
+<figure>
+  <img src="../../assets/img/blog/lab-c9800-gui-15b.png" width="869" height="586" loading="lazy" style="border:1px solid var(--line);border-radius:var(--radius)" alt="Cliente conectado a CY-Invitados después de aceptar el portal.">
+  <figcaption>Cliente conectado a CY-Invitados después de aceptar el portal.</figcaption>
+</figure>
+<p class="code-label">WLC y CYLab_sw1</p>
+<pre><code>! En la controladora
+show wireless client summary
+! En el switch: las IP entregadas a los clientes
+show ip dhcp binding</code></pre>
+<p>Resultado en el laboratorio: los dos teléfonos quedaron en estado <code>Run</code>; el de CY-Invitados con método <code>Web Auth</code>, porque pasó por el portal.</p>
+<pre><code>MAC Address    AP Name    Type ID   State  Protocol   Method
+d228.5feb.29a7 AP-LAB-01  WLAN 1    Run    11n(2.4)   None
+deb0.00fb.579b AP-LAB-01  WLAN 2    Run    11n(2.4)   Web Auth</code></pre>
+
+<h2>Solución de problemas</h2>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Síntoma</th><th>Causa probable</th><th>Qué revisar</th></tr></thead>
+  <tbody>
+    <tr><td>El AP no enciende</td><td>Sin PoE: el switch del laboratorio no lo tiene</td><td>Inyector PoE o switch con PoE</td></tr>
+    <tr><td>El AP no recibe IP</td><td>VLAN nativa del troncal o pool DHCP</td><td><code>show ip dhcp binding</code>, <code>show interfaces trunk</code></td></tr>
+    <tr><td>Tiene IP pero no aparece en la controladora</td><td>Opción 43 mal calculada o falta la ruta de regreso en la controladora</td><td>Valor hexadecimal del pool; <code>show ip route static</code> en la controladora</td></tr>
+    <tr><td>El AP sigue buscando una controladora vieja</td><td>Recuerda la última controladora a la que se unió</td><td><code>show ap name &lt;AP&gt; config general</code>; corregir la controladora primaria o <code>clear ap config</code></td></tr>
+    <tr><td>Error DTLS en el join summary</td><td>Reloj desfasado o falta el certificado SSC (9800-CL)</td><td><code>show clock</code>, <code>show wireless management trustpoint</code></td></tr>
+    <tr><td>Registrado pero sin SSID</td><td>AP con tags por defecto o WLAN apagada</td><td><code>show ap tag summary</code>, <code>show wlan summary</code></td></tr>
+    <tr><td>El portal de invitados no aparece</td><td>Falta la IP virtual, o el cliente no resuelve DNS ni llega a internet</td><td><code>show running-config | section parameter-map type webauth global</code>; rutas del router hacia 10.10.20.0/24</td></tr>
+    <tr><td>El cliente se conecta pero no recibe IP</td><td>VLAN ausente en el Flex profile o en el troncal del AP</td><td>Pestaña VLAN de FLEX-LAB; <code>switchport trunk allowed vlan</code> en Gi1/0/15</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Para ver cada fase del registro de un AP, la controladora guarda trazas por MAC. En la GUI: <em>Troubleshooting › Radioactive Trace</em>. Por CLI, con la MAC de radio del AP:</p>
+<pre><code>show logging profile wireless filter mac 5c5a.c76e.f380 to-file bootflash:join-ap.log
+more bootflash:join-ap.log</code></pre>
+
+<h2>Documentación oficial de Cisco</h2>
+<ul>
+  <li><a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/9800-cloud/installation/b-c9800-cl-install-guide/installing-controller-on-hyperv.html" target="_blank" rel="noopener">Installing the Catalyst 9800-CL in Microsoft Hyper-V</a>: requisitos de la máquina virtual y perfiles.</li>
+  <li><a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/technical-reference/c9800-cl-dg.html" target="_blank" rel="noopener">Cisco Catalyst 9800-CL Wireless Controller for Cloud Deployment Guide</a>: dimensionamiento y certificado SSC.</li>
+  <li><a href="https://www.cisco.com/c/en/us/support/docs/wireless-mobility/wireless-lan-wlan/97066-dhcp-option-43-00.html" target="_blank" rel="noopener">Configure DHCP Option 43 for Lightweight Access Points</a>: formato TLV y ejemplos para IOS y Windows.</li>
+  <li><a href="https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9120axe-access-point/221056-understand-the-ap-join-process-with-the.html" target="_blank" rel="noopener">Understand the AP Join Process with the Catalyst 9800 WLC</a>: métodos de descubrimiento y fases del join.</li>
+  <li><a href="https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/213911-understand-catalyst-9800-wireless-contro.html" target="_blank" rel="noopener">Understand Catalyst 9800 Wireless Controllers Configuration Model</a>: perfiles y tags.</li>
+  <li><a href="https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/213945-understand-flexconnect-on-9800-wireless.html" target="_blank" rel="noopener">Understand FlexConnect on Catalyst 9800 Wireless Controller</a>: Flex profile, switching local y Site Tag.</li>
+  <li><a href="https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/218396-troubleshoot-catalyst-9800-ap-join-or-di.html" target="_blank" rel="noopener">Troubleshoot Catalyst 9800 AP Join or Disconnection Issues Flow</a>: diagnóstico paso a paso.</li>
+  <li><a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/config-guide/web-authentication/b-configuring-web-based-authentication-on-cisco-catalyst-9800-series-controllers/m-local-web-authentication-configuration.html" target="_blank" rel="noopener">Web-Based Authentication on Cisco Catalyst 9800: Configure Local Web Authentication</a>: parameter maps, consent y mensaje (banner).</li>
+  <li><a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/technical-reference/c9800-best-practices.html" target="_blank" rel="noopener">Cisco Catalyst 9800 Series Configuration Best Practices</a>: recomendaciones generales de diseño.</li>
+</ul>
+
+<h2>Conclusiones</h2>
+<p>Con la VLAN de gestión y la opción 43, cualquier AP Cisco que se conecte a un puerto como Gi1/0/15 encuentra la controladora y se registra solo. Pero registrarse no es lo mismo que publicar los SSID: un AP nuevo llega con los tags por defecto y no transmite CY-Corp ni CY-Invitados. Una vez el AP aparece en la controladora, se le asignan sus tags (paso 5.5) y solo entonces publica los dos SSID en sus VLAN, con el mensaje de bienvenida para los invitados. Como esa asignación es estática por MAC y queda guardada en la controladora, se hace una sola vez por AP: si ese mismo AP se reinicia o se deja de fábrica, al volver a registrarse recupera sus tags. Un AP distinto, con otra MAC, necesita su propia asignación.</p>
+<p>A partir de aquí lo natural es pasar el SSID corporativo de PSK a 802.1X con un servidor RADIUS, crear un AP Join profile propio (credenciales y SSH del AP) y usar reglas de etiquetado automático (por ejemplo, por nombre del AP) para no asignar los tags AP por AP.</p>
+
+      </div>
+      <aside class="article-cta">
+        <h2>¿Quiere implementar algo similar en su empresa?</h2>
+        <p>Diseñamos e implementamos redes inalámbricas empresariales con Cisco Catalyst 9800, con soporte y monitoreo continuo.</p>
+        <a class="btn btn--primary" href="../../index.html#contacto">Hablemos de su proyecto</a>
+      </aside>
+    </article>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="../../index.html" aria-label="CY Solutions Group S.A.S, inicio">
+      <svg class="logo-mark" viewBox="-30 -30 620 600" aria-hidden="true">
+<g stroke-width="10" stroke-linecap="round"><line x1="263" y1="23" x2="476" y2="92"/><line x1="263" y1="23" x2="310" y2="260"/><line x1="476" y1="92" x2="310" y2="260"/><line x1="140" y1="150" x2="50" y2="238"/><line x1="140" y1="150" x2="310" y2="260"/><line x1="50" y1="238" x2="310" y2="260"/><line x1="50" y1="238" x2="55" y2="468"/><line x1="55" y1="468" x2="220" y2="430"/><line x1="310" y1="260" x2="545" y2="315"/><line x1="310" y1="260" x2="542" y2="412"/><line x1="545" y1="315" x2="542" y2="412"/><line x1="310" y1="260" x2="390" y2="520"/><line x1="390" y1="520" x2="542" y2="412"/></g>
+<g class="dot"><circle cx="263" cy="23" r="26"/><circle cx="140" cy="150" r="24"/><circle cx="545" cy="315" r="26"/><circle cx="542" cy="412" r="26"/></g>
+<g class="ring" stroke-width="18"><circle cx="310" cy="260" r="58"/><circle cx="476" cy="92" r="31"/><circle cx="50" cy="238" r="31"/><circle cx="55" cy="468" r="23"/><circle cx="390" cy="520" r="23"/></g>
+</svg>
+      <span class="brand-text"><strong>CY SOLUTIONS</strong><span>GROUP S.A.S</span></span>
+    </a>
+        <p>Redes, telecomunicaciones y seguridad electrónica para empresas en Colombia.</p>
+      </div>
+      <div>
+        <h4>Sitio</h4>
+        <ul>
+          <li><a href="../../index.html#servicios">Servicios de red</a></li>
+          <li><a href="../../index.html#seguridad-electronica">Seguridad electrónica</a></li>
+          <li><a href="../../index.html#nosotros">Nosotros</a></li>
+          <li><a href="../../blog/index.html">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="tel:+573173329337">317 332 9337</a></li>
+          <li><a href="mailto:yternera@cysolutionsgroup.com">yternera@cysolutionsgroup.com</a></li>
+          <li><a href="https://www.linkedin.com/company/cy-solutions-group-sas/" target="_blank" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> CY Solutions Group S.A.S. Todos los derechos reservados.</span>
+      <span>Hecho en Colombia</span>
+    </div>
+  </div>
+</footer>
+<a class="wa" href="https://wa.me/573173329337?text=Hola%20CY%20Solutions%2C%20quisiera%20informaci%C3%B3n%20sobre%20sus%20servicios." target="_blank" rel="noopener" aria-label="Escríbanos por WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.6l-.4-.3-3.8 1.2 1.2-3.7-.3-.4a10.4 10.4 0 0 1-1.7-5.8C5.1 9.9 10 5.2 16 5.2s10.9 4.7 10.9 10.6S22 26.4 16 26.4zm6-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.9 8.9 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.1 1.3 3.3c.2.2 2.3 3.5 5.6 4.9 2.1.9 2.9 1 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg></a>
+<script src="../../assets/js/posts.js"></script>
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

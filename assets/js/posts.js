@@ -11,6 +11,14 @@
    ========================================================= */
 window.CY_POSTS = [
   {
+    titulo: "Laboratorio: registro y configuración básica de un AP en una Cisco Catalyst 9800",
+    resumen: "Registro de un AP en una Catalyst 9800-CL de tres formas y dos SSID en FlexConnect, uno con portal cautivo, por GUI y CLI. Probado en equipos reales.",
+    categoria: "Laboratorios",
+    fecha: "2026-11-20",
+    lectura: "18 min",
+    url: "blog/articulos/lab-c9800-registro-ap.html"
+  },
+  {
     titulo: "Laboratorio: segmentación con VLAN entre un switch core y FortiGate",
     resumen: "Paso a paso para separar usuarios, servidores y WiFi de invitados en VLAN independientes, con un FortiGate controlando el tráfico entre ellas.",
     categoria: "Laboratorios",
